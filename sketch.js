@@ -6,7 +6,8 @@ const rows = 6;
 const cols = 7;
 let cellSize;
 let currentPlayer = 'red'; // set the starting player
-let redImg, yellowImg;
+let docImg, fortniteImg, hatsunImg, nappinImg, peterImg, pirateImg, waveImg, redImg, yellowImg; // epic pieces
+let curRedImg, curYellowImg;
 
 function preload() { 
   cellSize = boardSize / cols; // keep board cells at board size
@@ -16,8 +17,33 @@ function preload() {
   yellowImg = loadImage('assets/yellow_chip.png', img => {
     img.resize(cellSize, cellSize);
   });
+  docImg = loadImage('assets/dococt_skin.png', img => {
+    img.resize(cellSize, cellSize);
+  });
+  fortniteImg = loadImage('assets/fortnite_skin.png', img => {
+    img.resize(cellSize, cellSize);
+  });
+  hatsunImg = loadImage('assets/hatsunemiku_skin.png', img => {
+    img.resize(cellSize, cellSize);
+  });
+  nappinImg = loadImage('assets/nappin_skin.png', img => {
+    img.resize(cellSize, cellSize);
+  });
+  peterImg = loadImage('assets/petergriffin_skin.png', img => {
+    img.resize(cellSize, cellSize);
+  });
+  pirateImg = loadImage('assets/piratecap_skin.png', img => {
+    img.resize(cellSize, cellSize);
+  });
+  waveImg = loadImage('assets/wave_skin.png', img => {
+    img.resize(cellSize, cellSize);
+  });
+
 }
 
+function setPiece() {
+
+}
 
 function setup() {
   // Create a full-screen canvas
@@ -45,6 +71,8 @@ function drawBoard() {
   // Translate so that the board is drawn at the desired offset
   translate(xOffset, yOffset);
   noStroke();
+  // Highlight the column under the mouse
+  highlightColumn();
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
       fill(20, 0, 200); // Blue board background
@@ -62,7 +90,7 @@ function drawBoard() {
       noStroke(); // disable stroke for images
 
       if (board[r][c] === 'red') {
-        image(redImg, c * cellSize, r * cellSize, cellSize, cellSize);
+        image(peterImg, c * cellSize, r * cellSize, cellSize, cellSize);
       } else if (board[r][c] === 'yellow') {
         image(yellowImg, c * cellSize, r * cellSize, cellSize, cellSize);
       }
@@ -109,7 +137,7 @@ function pieceDrop() { // applies gravity to the pieces checking if there is any
         board[row][col] = board[row - 1][col]; // move the piece down
         board[row - 1][col] = ' '; // remove the piece from the previous position
       }
-      
+
     }
   }
 }
@@ -197,4 +225,20 @@ function windowResized() {
   xOffset = (width - boardSize) / 2;
   yOffset = (height - boardSize) / 2;
 
+}
+
+function highlightColumn() {
+  // Check if the mouse is within the board area
+  if (mouseX >= xOffset && mouseX <= xOffset + boardSize && mouseY >= yOffset && mouseY <= yOffset + boardSize) {
+    let col = Math.floor((mouseX - xOffset) / cellSize);
+    if(currentPlayer === 'red') {
+      fill(200, 0, 0, 200); // Dark blue with some transparency
+      rect(col * cellSize, 0, cellSize, 720);
+    }
+    else{
+      fill(250, 200, 0, 200); // Yellow with some transparency
+      rect(col * cellSize, 0, cellSize, 720);
+    }
+    
+  }
 }
