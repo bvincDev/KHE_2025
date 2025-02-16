@@ -22,3 +22,23 @@ canvas {
 #turn {
   font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
 }
+
+.score {
+  position: absolute;
+  font-size: 24px;
+  font-weight: bold;
+  padding: 10px;
+  color: white;
+}
+
+#red-score {
+  top: 10px;
+  left: 10px;
+  background-color: rgb(228, 57, 57);
+}
+
+#yellow-score {
+  top: 10px;
+  right: 10px;
+  background-color: rgb(235, 212, 7);
+}

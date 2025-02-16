@@ -13,6 +13,10 @@ let curRedImg, curYellowImg;
 let popSound;
 let sickBeat;
 
+// Score elements
+let redScoreDiv;
+let yellowScoreDiv;
+
 // Timer variables
 let timerDiv;     // DOM element to display the timer
 let timerStart;   // time when current turn started (in milliseconds)
@@ -61,6 +65,12 @@ function setup() {
   timerDiv.style('text-align', 'center'); // Center the text inside the div
   timerDiv.style('text-shadow', '0 0 9px rgba(255, 72, 0, 0.5)'); // Add drop shadow
   
+
+  // Get references to the score div elements
+  redScoreDiv = select('#red-score');
+  yellowScoreDiv = select('#yellow-score');
+
+
   // Start the turn timer
   timerStart = millis();
 }
@@ -79,6 +89,11 @@ function updateTimer() {
   if (timeLeft < 0) timeLeft = 0;
   
   timerDiv.html("Current turn: " + currentPlayer + " - Time left: " + timeLeft + " seconds");
+}
+
+function updateScoreDisplay() {
+  redScoreDiv.html(redScore);
+  yellowScoreDiv.html(yellowScore);
 }
 
 function draw() {
@@ -144,6 +159,7 @@ function mousePressed() { // updatge the board when the mouse is clicked
           if(currentPlayer === 'yellow') {
             yellowScore++;
           }
+          updateScoreDisplay();
         }
         pieceDrop();
         // Check for cascading combos after pieces have fallen
@@ -200,7 +216,7 @@ function checkHorizontal(row) {
 function checkVertical(col) {
   let count = 0;
   for (let r = 0; r < rows; r++) {
-    count = (board[r][col] === currentPlayer) ? count + 1 : 0;
+    count = (board[r][col] === currentPlayer) ? count + 1 : 0; // check if the piece is the same as the current player
     if (count === 4) {
       //delete pieces
       for (let i = 0; i < 4; i++) {
