@@ -13,6 +13,10 @@ let curRedImg, curYellowImg;
 let popSound;
 let sickBeat;
 
+// Score elements
+let redScoreDiv;
+let yellowScoreDiv;
+
 // Timer variables
 let timerDiv;     // DOM element to display the timer
 let timerStart;   // time when current turn started (in milliseconds)
@@ -29,6 +33,25 @@ function preload() {
   });
   popSound = loadSound('assets/pop.wav');
   sickBeat = loadSound('assets/connect.mp3');
+
+  // Load all possible skins
+  chipImages = {
+    'DOCTOR': loadImage('assets/dococt_skin.png'),
+    'GAMER': loadImage('assets/fortnite_skin.png'),
+    'IDOL': loadImage('assets/hatsunemiku_skin.png'),
+    'SLEEPER': loadImage('assets/nappin_skin.png'),
+    'PIRATE': loadImage('assets/piratecap_skin.png'),
+    'FRESHMAN': loadImage('assets/wave_skin.png'),
+    'PETER': loadImage('assets/petergriffin_skin.png')
+};
+
+// Retrieve selected skins from localStorage
+let redSkin = localStorage.getItem('redSkin');
+let yellowSkin = localStorage.getItem('yellowSkin');
+
+// Apply selected skins (fallback to default chip if not selected)
+curRedImg = chipImages[redSkin] || redImg;
+curYellowImg = chipImages[yellowSkin] || yellowImg;
 }
 
 
@@ -61,6 +84,12 @@ function setup() {
   timerDiv.style('text-align', 'center'); // Center the text inside the div
   timerDiv.style('text-shadow', '0 0 9px rgba(255, 72, 0, 0.5)'); // Add drop shadow
   
+
+  // Get references to the score div elements
+  redScoreDiv = select('#red-score');
+  yellowScoreDiv = select('#yellow-score');
+
+
   // Start the turn timer
   timerStart = millis();
 }
@@ -81,6 +110,11 @@ function updateTimer() {
   timerDiv.html("Current turn: " + currentPlayer + " - Time left: " + timeLeft + " seconds");
 }
 
+function updateScoreDisplay() {
+  redScoreDiv.html(redScore);
+  yellowScoreDiv.html(yellowScore);
+}
+
 function draw() {
   background(255);
 
@@ -98,26 +132,37 @@ function drawBoard() {
   highlightColumn();
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
+      // Draw the board cell
       fill(20, 0, 200); // Blue board background
       rect(c * cellSize, r * cellSize, cellSize, cellSize);
-      fill(255); // color fill inside spaces
-      stroke(0); // black border
+      fill(255); // fill color for the circle background
+      stroke(0); // black border for the circle
       strokeWeight(8); // border thickness
 
+      // Draw the circle where the piece will go
       ellipse(
         c * cellSize + cellSize / 2,
         r * cellSize + cellSize / 2,
-        cellSize * 0.65 // size of the circle
+        cellSize * 0.65
       );
 
-      noStroke(); // disable stroke for images
+      noStroke(); // disable stroke for the images
 
       if (board[r][c] === 'red') {
+        // draw the default red chip
         image(redImg, c * cellSize, r * cellSize, cellSize, cellSize);
+        // overlay the selected red skin if one exists and it's not the default
+        if (curRedImg && curRedImg !== redImg) {
+          image(curRedImg, c * cellSize, r * cellSize, cellSize, cellSize);
+        }
       } else if (board[r][c] === 'yellow') {
+        // draw the default yellow chip
         image(yellowImg, c * cellSize, r * cellSize, cellSize, cellSize);
+        // then overlay the selected yellow skin if one exists and it's not the default
+        if (curYellowImg && curYellowImg !== yellowImg) {
+          image(curYellowImg, c * cellSize, r * cellSize, cellSize, cellSize);
+        }
       }
-
     }
   }
   pop();
@@ -129,7 +174,7 @@ function mousePressed() { // updatge the board when the mouse is clicked
     return;
   }
   
-  // Adjust the mouseX coordinate to the new board position
+  // adjust the mouseX coordinate to the new board position
   let adjustedX = mouseX - xOffset;
   let col = Math.floor(adjustedX  / cellSize); // get the column by checking mouses x position
   if (col >= 0 && col < cols) {
@@ -144,6 +189,7 @@ function mousePressed() { // updatge the board when the mouse is clicked
           if(currentPlayer === 'yellow') {
             yellowScore++;
           }
+          updateScoreDisplay();
         }
         pieceDrop();
         // Check for cascading combos after pieces have fallen
@@ -200,7 +246,7 @@ function checkHorizontal(row) {
 function checkVertical(col) {
   let count = 0;
   for (let r = 0; r < rows; r++) {
-    count = (board[r][col] === currentPlayer) ? count + 1 : 0;
+    count = (board[r][col] === currentPlayer) ? count + 1 : 0; // check if the piece is the same as the current player
     if (count === 4) {
       //delete pieces
       for (let i = 0; i < 4; i++) {
@@ -373,12 +419,58 @@ function isBoardFull() {
   return true;
 }
 
-// End the game 
+function showGameOverScreen() {
+  // Create a div for the game over screen
+  let gameOverDiv = createDiv('');
+  gameOverDiv.style('position', 'fixed');
+  gameOverDiv.style('top', '50%');
+  gameOverDiv.style('left', '50%');
+  gameOverDiv.style('transform', 'translate(-50%, -50%)');
+  gameOverDiv.style('font-size', '32px');
+  gameOverDiv.style('font-family', 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif');
+  gameOverDiv.style('color', '#ffffff');
+  gameOverDiv.style('background-color', 'rgba(0, 0, 0, 0.8)');
+  gameOverDiv.style('padding', '20px');
+  gameOverDiv.style('border-radius', '10px');
+  gameOverDiv.style('text-align', 'center');
+  gameOverDiv.style('box-shadow', '0 0 10px rgba(0, 0, 0, 0.5)');
+
+  // Determine the winner
+  let winner = redScore > yellowScore ? 'Red' : 'Yellow';
+  if (redScore === yellowScore) {
+    winner = 'No one, it\'s a tie';
+  }
+
+  // Set the content of the game over screen
+  gameOverDiv.html(`
+    <h1>Game Over!</h1>
+    <p>Winner: ${winner}</p>
+    <p>Red Score: ${redScore}</p>
+    <p>Yellow Score: ${yellowScore}</p>
+    <button id="restartButton">Restart</button>
+  `);
+
+  // event listener to the restart button
+  select('#restartButton').mousePressed(() => {
+    gameOverDiv.remove();
+    resetGame();
+  });
+}
+
 function endGame() {
-  noLoop(); 
+  noLoop();
   console.log("Game over! The board is full!");
   console.log("Red score: " + redScore);
   console.log("Yellow score: " + yellowScore);
+  showGameOverScreen();
 }
 
-
+function resetGame() {
+  // Reset the board and scores
+  board = Array.from({ length: rows }, () => Array(cols).fill(' '));
+  redScore = 0;
+  yellowScore = 0;
+  currentPlayer = 'red';
+  loop();
+  timerStart = millis();
+}

@@ -7,6 +7,7 @@ let sickBeat;
 let chipImages = {};
 let selectedRedChip;
 let selectedYellowChip;
+let htp;
 
 function preload () {
 sickBeat = loadSound('assets/connect.mp3');
@@ -37,6 +38,15 @@ function setup () {
     startButton.style ('background-color',' rgb(255, 204, 0)');
     startButton.style('cursor', 'pointer');
     startButton.style('font-weight', 'bold');
+
+    htp = createButton('HOW TO PLAY');
+    htp.position((windowWidth - 200) / 2, (windowHeight - 50) / 2 + 300);
+    htp.mousePressed(goToLink2);
+    htp.style('font-size', '48px');
+    htp.style('border', 'none ');
+    htp.style ('background-color',' rgb(255, 204, 0)');
+    htp.style('cursor', 'pointer');
+    htp.style('font-weight', 'bold');
 
     redTeam = createSelect();
     redTeam.position((windowWidth - 200) / 5, (windowHeight - 30) / 1.5);
@@ -111,5 +121,14 @@ function draw () {
 
 function goToLink () {
     window.location.href = 'game.html';
+    if (selectedRedChip) {
+        localStorage.setItem('redSkin', selectedRedChip);
+    }
+    if (selectedYellowChip) {
+        localStorage.setItem('yellowSkin', selectedYellowChip);
+    }
 }
 
+function goToLink2() {
+    window.location.href = 'htp.html';
+}
