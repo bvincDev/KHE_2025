@@ -8,11 +8,12 @@ let chipImages = {};
 let selectedRedChip;
 let selectedYellowChip;
 let htp;
-
+let logo;
 function preload () {
 sickBeat = loadSound('assets/connect.mp3');
 redChip = loadImage('assets/red_chip.png');
 yellowChip = loadImage('assets/yellow_chip.png');
+logo = loadImage('assets/logo.png');
 
 chipImages['DOCTOR'] = loadImage('assets/dococt_skin.png');
 chipImages['GAMER'] = loadImage('assets/fortnite_skin.png');
@@ -106,7 +107,7 @@ function draw () {
 
     image(redChip, redChipX,redChipY, 600, 600); //helps create x position for red chip so yellow chip can reflect of its position
     image(yellowChip,yellowChipX , (windowHeight - 30) / 4, 600, 600);
-
+    image(logo, (windowWidth - 600) / 2 -900, (windowHeight - 30) / 2 + 500, 100, 100);
     if (chipImages[selectedRedChip]) {
         image(chipImages[selectedRedChip], redChipX, redChipY, 600, 600);
     }
