@@ -20,6 +20,7 @@ function preload() {
 
 function setup() {
   createCanvas(800, 800);
+
   cellSize = width / cols;
   board = Array.from({ length: rows }, () => Array(cols).fill(' '));
   
@@ -43,7 +44,7 @@ function drawBoard() {
       ellipse(
         c * cellSize + cellSize / 2,
         r * cellSize + cellSize / 2,
-        cellSize * 0.8
+        cellSize * 0.65 // size of the circle
       );
 
       noStroke(); // disable stroke for images
@@ -73,6 +74,7 @@ function mousePressed() {
             yellowScore++;
           }
         }
+        pieceDrop();
         currentPlayer = currentPlayer === 'red' ? 'yellow' : 'red';
         break;
       }
@@ -80,7 +82,19 @@ function mousePressed() {
   }
 }
 
-function fourInARow(row, col) {
+function pieceDrop() { // applies gravity to the pieces checking if there is anything underneath
+  for (let col = 0; col < cols; col++) {
+    for (let row = rows - 1; row > 0; row--) {
+      if (board[row][col] === ' ' && board[row - 1][col] !== ' ') {
+        board[row][col] = board[row - 1][col];
+        board[row - 1][col] = ' ';
+      }
+    }
+  }
+  
+}
+
+function fourInARow(row, col) { 
   return (
     checkHorizontal(row) || // horizontal
     checkVertical(col) || // vertical
@@ -92,10 +106,10 @@ function fourInARow(row, col) {
 function checkHorizontal(row) {
   let count = 0;
   for (let c = 0; c < cols; c++) {
-    count = (board[row][c] === currentPlayer) ? count + 1 : 0;
+    count = (board[row][c] === currentPlayer) ? count + 1 : 0; 
     if (count === 4) {
       //delete piece
-      for (let i = 0; i < 4; i++) {
+      for (let i = 0; i < 4; i++) { 
         board[row][c - i] = ' ';
       }
       return true;
