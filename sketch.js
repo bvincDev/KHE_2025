@@ -1,4 +1,4 @@
-let board;
+let board; // stores the board state in array
 redScore = 0;
 yellowScore = 0;
 const boardSize = 800; // fixed board size
@@ -21,7 +21,7 @@ function preload() {
 
 function setup() {
   // Create a full-screen canvas
-  createCanvas(windowWidth, windowHeight);
+  createCanvas(windowWidth, boardSize);
   
   // Center the board on the canvas
   xOffset = (width - boardSize) / 2;
@@ -34,6 +34,7 @@ function setup() {
   board = Array.from({ length: rows }, () => Array(cols).fill(' '));
 }
 
+
 function draw() {
   background(255);
   drawBoard();
@@ -43,7 +44,6 @@ function drawBoard() {
   push();
   // Translate so that the board is drawn at the desired offset
   translate(xOffset, yOffset);
-
   noStroke();
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
@@ -105,13 +105,13 @@ function mousePressed() {
 function pieceDrop() { // applies gravity to the pieces checking if there is anything underneath
   for (let col = 0; col < cols; col++) {
     for (let row = rows - 1; row > 0; row--) {
-      if (board[row][col] === ' ' && board[row - 1][col] !== ' ') {
-        board[row][col] = board[row - 1][col];
-        board[row - 1][col] = ' ';
+      if (board[row][col] === ' ' && board[row - 1][col] !== ' ') { 
+        board[row][col] = board[row - 1][col]; // move the piece down
+        board[row - 1][col] = ' '; // remove the piece from the previous position
       }
+      
     }
   }
-  
 }
 
 function fourInARow(row, col) { 
