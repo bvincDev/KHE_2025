@@ -33,6 +33,25 @@ function preload() {
   });
   popSound = loadSound('assets/pop.wav');
   sickBeat = loadSound('assets/connect.mp3');
+
+  // Load all possible skins
+  chipImages = {
+    'DOCTOR': loadImage('assets/dococt_skin.png'),
+    'GAMER': loadImage('assets/fortnite_skin.png'),
+    'IDOL': loadImage('assets/hatsunemiku_skin.png'),
+    'SLEEPER': loadImage('assets/nappin_skin.png'),
+    'PIRATE': loadImage('assets/piratecap_skin.png'),
+    'FRESHMAN': loadImage('assets/wave_skin.png'),
+    'PETER': loadImage('assets/petergriffin_skin.png')
+};
+
+// Retrieve selected skins from localStorage
+let redSkin = localStorage.getItem('redSkin');
+let yellowSkin = localStorage.getItem('yellowSkin');
+
+// Apply selected skins (fallback to default chip if not selected)
+curRedImg = chipImages[redSkin] || redImg;
+curYellowImg = chipImages[yellowSkin] || yellowImg;
 }
 
 
@@ -113,26 +132,37 @@ function drawBoard() {
   highlightColumn();
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
+      // Draw the board cell
       fill(20, 0, 200); // Blue board background
       rect(c * cellSize, r * cellSize, cellSize, cellSize);
-      fill(255); // color fill inside spaces
-      stroke(0); // black border
+      fill(255); // fill color for the circle background
+      stroke(0); // black border for the circle
       strokeWeight(8); // border thickness
 
+      // Draw the circle where the piece will go
       ellipse(
         c * cellSize + cellSize / 2,
         r * cellSize + cellSize / 2,
-        cellSize * 0.65 // size of the circle
+        cellSize * 0.65
       );
 
-      noStroke(); // disable stroke for images
+      noStroke(); // disable stroke for the images
 
       if (board[r][c] === 'red') {
+        // draw the default red chip
         image(redImg, c * cellSize, r * cellSize, cellSize, cellSize);
+        // overlay the selected red skin if one exists and it's not the default
+        if (curRedImg && curRedImg !== redImg) {
+          image(curRedImg, c * cellSize, r * cellSize, cellSize, cellSize);
+        }
       } else if (board[r][c] === 'yellow') {
+        // draw the default yellow chip
         image(yellowImg, c * cellSize, r * cellSize, cellSize, cellSize);
+        // then overlay the selected yellow skin if one exists and it's not the default
+        if (curYellowImg && curYellowImg !== yellowImg) {
+          image(curYellowImg, c * cellSize, r * cellSize, cellSize, cellSize);
+        }
       }
-
     }
   }
   pop();
@@ -144,7 +174,7 @@ function mousePressed() { // updatge the board when the mouse is clicked
     return;
   }
   
-  // Adjust the mouseX coordinate to the new board position
+  // adjust the mouseX coordinate to the new board position
   let adjustedX = mouseX - xOffset;
   let col = Math.floor(adjustedX  / cellSize); // get the column by checking mouses x position
   if (col >= 0 && col < cols) {
