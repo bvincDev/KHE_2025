@@ -7,6 +7,7 @@ const cols = 7;
 let cellSize;
 let currentPlayer = 'red'; // set the starting player
 let redImg, yellowImg;
+let popSound;
 
 function preload() { 
   cellSize = boardSize / cols; // keep board cells at board size
@@ -16,6 +17,7 @@ function preload() {
   yellowImg = loadImage('assets/yellow_chip.png', img => {
     img.resize(cellSize, cellSize);
   });
+  popSound = loadSound(assets/pop.wav);
 }
 
 
@@ -96,6 +98,7 @@ function mousePressed() {
         }
         pieceDrop();
         currentPlayer = currentPlayer === 'red' ? 'yellow' : 'red';
+        popSound.play();
         break;
       }
     }
