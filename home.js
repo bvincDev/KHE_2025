@@ -121,6 +121,12 @@ function draw () {
 
 function goToLink () {
     window.location.href = 'game.html';
+    if (selectedRedChip) {
+        localStorage.setItem('redSkin', selectedRedChip);
+    }
+    if (selectedYellowChip) {
+        localStorage.setItem('yellowSkin', selectedYellowChip);
+    }
 }
 
 function goToLink2() {
