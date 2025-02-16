@@ -6,7 +6,8 @@ const rows = 6;
 const cols = 7;
 let cellSize;
 let currentPlayer = 'red'; // set the starting player
-let redImg, yellowImg;
+let docImg, fortniteImg, hatsunImg, nappinImg, peterImg, pirateImg, waveImg, redImg, yellowImg; // epic pieces
+let curRedImg, curYellowImg;
 let popSound;
 
 function preload() { 
@@ -17,7 +18,7 @@ function preload() {
   yellowImg = loadImage('assets/yellow_chip.png', img => {
     img.resize(cellSize, cellSize);
   });
-  popSound = loadSound(assets/pop.wav);
+  popSound = loadSound('assets/pop.wav');
 }
 
 
