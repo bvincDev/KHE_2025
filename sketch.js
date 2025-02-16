@@ -9,20 +9,25 @@ let currentPlayer = 'red'; // set the starting player
 let docImg, fortniteImg, hatsunImg, nappinImg, peterImg, pirateImg, waveImg, redImg, yellowImg; // epic pieces
 let curRedImg, curYellowImg;
 let popSound;
+let sickBeat;
 
 function preload() { 
   cellSize = boardSize / cols; // keep board cells at board size
   redImg = loadImage('assets/red_chip.png', img => {
     img.resize(cellSize, cellSize);
   }); 
+  
   yellowImg = loadImage('assets/yellow_chip.png', img => {
     img.resize(cellSize, cellSize);
   });
   popSound = loadSound('assets/pop.wav');
+  sickBeat = loadSound('assets/connect.mp3');
 }
 
 
 function setup() {
+  sickBeat.loop();
+
   // Create a full-screen canvas
   createCanvas(windowWidth, boardSize);
   
@@ -48,6 +53,7 @@ function drawBoard() {
   // Translate so that the board is drawn at the desired offset
   translate(xOffset, yOffset);
   noStroke();
+  highlightColumn();
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
       fill(20, 0, 200); // Blue board background
@@ -201,4 +207,20 @@ function windowResized() {
   xOffset = (width - boardSize) / 2;
   yOffset = (height - boardSize) / 2;
 
+}
+
+function highlightColumn() {
+  // Check if the mouse is within the board area
+  if (mouseX >= xOffset && mouseX <= xOffset + boardSize && mouseY >= yOffset && mouseY <= yOffset + boardSize) {
+    let col = Math.floor((mouseX - xOffset) / cellSize);
+    if(currentPlayer === 'red') {
+      fill(200, 0, 0, 200); // Dark blue with some transparency
+      rect(col * cellSize, 0, cellSize, 720);
+    }
+    else{
+      fill(250, 200, 0, 200); // Yellow with some transparency
+      rect(col * cellSize, 0, cellSize, 720);
+    }
+    
+  }
 }
