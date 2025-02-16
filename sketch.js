@@ -373,12 +373,58 @@ function isBoardFull() {
   return true;
 }
 
-// End the game 
+function showGameOverScreen() {
+  // Create a div for the game over screen
+  let gameOverDiv = createDiv('');
+  gameOverDiv.style('position', 'fixed');
+  gameOverDiv.style('top', '50%');
+  gameOverDiv.style('left', '50%');
+  gameOverDiv.style('transform', 'translate(-50%, -50%)');
+  gameOverDiv.style('font-size', '32px');
+  gameOverDiv.style('font-family', 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif');
+  gameOverDiv.style('color', '#ffffff');
+  gameOverDiv.style('background-color', 'rgba(0, 0, 0, 0.8)');
+  gameOverDiv.style('padding', '20px');
+  gameOverDiv.style('border-radius', '10px');
+  gameOverDiv.style('text-align', 'center');
+  gameOverDiv.style('box-shadow', '0 0 10px rgba(0, 0, 0, 0.5)');
+
+  // Determine the winner
+  let winner = redScore > yellowScore ? 'Red' : 'Yellow';
+  if (redScore === yellowScore) {
+    winner = 'No one, it\'s a tie';
+  }
+
+  // Set the content of the game over screen
+  gameOverDiv.html(`
+    <h1>Game Over!</h1>
+    <p>Winner: ${winner}</p>
+    <p>Red Score: ${redScore}</p>
+    <p>Yellow Score: ${yellowScore}</p>
+    <button id="restartButton">Restart</button>
+  `);
+
+  // event listener to the restart button
+  select('#restartButton').mousePressed(() => {
+    gameOverDiv.remove();
+    resetGame();
+  });
+}
+
 function endGame() {
-  noLoop(); 
+  noLoop();
   console.log("Game over! The board is full!");
   console.log("Red score: " + redScore);
   console.log("Yellow score: " + yellowScore);
+  showGameOverScreen();
 }
 
-
+function resetGame() {
+  // Reset the board and scores
+  board = Array.from({ length: rows }, () => Array(cols).fill(' '));
+  redScore = 0;
+  yellowScore = 0;
+  currentPlayer = 'red';
+  loop();
+  timerStart = millis();
+}
