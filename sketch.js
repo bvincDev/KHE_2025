@@ -1,6 +1,7 @@
 let board;
 redScore = 0;
 yellowScore = 0;
+const boardSize = 800; // fixed board size
 const rows = 6;
 const cols = 7;
 let cellSize;
@@ -8,7 +9,7 @@ let currentPlayer = 'red'; // set the starting player
 let redImg, yellowImg;
 
 function preload() { 
-  cellSize = 800 / cols; // Assuming the canvas width is 800
+  cellSize = boardSize / cols; // keep board cells at board size
   redImg = loadImage('assets/red_chip.png', img => {
     img.resize(cellSize, cellSize);
   }); 
@@ -19,11 +20,18 @@ function preload() {
 
 
 function setup() {
-  createCanvas(800, 800);
-
-  cellSize = width / cols;
-  board = Array.from({ length: rows }, () => Array(cols).fill(' '));
+  // Create a full-screen canvas
+  createCanvas(windowWidth, windowHeight);
   
+  // Center the board on the canvas
+  xOffset = (width - boardSize) / 2;
+  yOffset = (height - boardSize) / 2;
+  
+  // Use the fixed boardSize for cellSize
+  cellSize = boardSize / cols;
+  
+  // Initialize the board
+  board = Array.from({ length: rows }, () => Array(cols).fill(' '));
 }
 
 function draw() {
@@ -32,6 +40,10 @@ function draw() {
 }
 
 function drawBoard() {
+  push();
+  // Translate so that the board is drawn at the desired offset
+  translate(xOffset, yOffset);
+
   noStroke();
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
@@ -57,10 +69,18 @@ function drawBoard() {
 
     }
   }
+  pop();
 }
 
 function mousePressed() {
-  let col = Math.floor(mouseX / cellSize); // get the column by checking mouses x position
+  // check if where you click is inside the board area with the offset
+  if (mouseX < xOffset || mouseX > xOffset + boardSize || mouseY < yOffset || mouseY > yOffset + boardSize) {
+    return;
+  }
+  
+  // Adjust the mouseX coordinate to the new board position
+  let adjustedX = mouseX - xOffset;
+  let col = Math.floor(adjustedX  / cellSize); // get the column by checking mouses x position
   if (col >= 0 && col < cols) {
     for (let row = rows - 1; row >= 0; row--) {
       if (board[row][col] === ' ') {
@@ -169,4 +189,12 @@ function checkDiagonal2(row, col) {
     }
   }
   return false;
+}
+
+function windowResized() {
+  // if the window is resized, the board will be centered
+  resizeCanvas(windowWidth, windowHeight);
+  xOffset = (width - boardSize) / 2;
+  yOffset = (height - boardSize) / 2;
+
 }
