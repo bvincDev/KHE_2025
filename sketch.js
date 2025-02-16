@@ -8,8 +8,12 @@ let cellSize;
 let currentPlayer = 'red'; // set the starting player
 let docImg, fortniteImg, hatsunImg, nappinImg, peterImg, pirateImg, waveImg, redImg, yellowImg; // epic pieces
 let curRedImg, curYellowImg;
+
+
 let popSound;
 let sickBeat;
+
+
 
 function preload() { 
   cellSize = boardSize / cols; // keep board cells at board size
@@ -38,8 +42,9 @@ function setup() {
   // Use the fixed boardSize for cellSize
   cellSize = boardSize / cols;
   
-  // Initialize the board
+  // initialize the board
   board = Array.from({ length: rows }, () => Array(cols).fill(' '));
+
 }
 
 
@@ -81,7 +86,7 @@ function drawBoard() {
   pop();
 }
 
-function mousePressed() {
+function mousePressed() { // updatge the board when the mouse is clicked
   // check if where you click is inside the board area with the offset
   if (mouseX < xOffset || mouseX > xOffset + boardSize || mouseY < yOffset || mouseY > yOffset + boardSize) {
     return;
@@ -92,7 +97,7 @@ function mousePressed() {
   let col = Math.floor(adjustedX  / cellSize); // get the column by checking mouses x position
   if (col >= 0 && col < cols) {
     for (let row = rows - 1; row >= 0; row--) {
-      if (board[row][col] === ' ') {
+      if (board[row][col] === ' ') { // check if the cell is empty
         board[row][col] = currentPlayer;
         if (fourInARow(row, col)) {
           console.log(currentPlayer + ' got a combo!');
@@ -104,6 +109,13 @@ function mousePressed() {
           }
         }
         pieceDrop();
+        // Check for cascading combos after pieces have fallen
+        cascade();
+
+        if (isBoardFull()) { //check for end game
+          endGame();
+          return;
+        }
         currentPlayer = currentPlayer === 'red' ? 'yellow' : 'red';
         popSound.play();
         break;
@@ -224,3 +236,112 @@ function highlightColumn() {
     
   }
 }
+
+function cascade() {
+  let comboFound;
+  do {
+    comboFound = false;
+    
+    // check horizontal combos
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c <= cols - 4; c++) {
+        let color = board[r][c];
+        if (color !== ' ' &&
+            board[r][c+1] === color &&
+            board[r][c+2] === color &&
+            board[r][c+3] === color) {
+          // remove the 4 in a row pieces
+          for (let i = 0; i < 4; i++) {
+            board[r][c+i] = ' ';
+          }
+          // update score for the corresponding color
+          if (color === 'red') redScore++;
+          else if (color === 'yellow') yellowScore++;
+          comboFound = true;
+        }
+      }
+    }
+    
+    // check vertical combos
+    for (let c = 0; c < cols; c++) {
+      for (let r = 0; r <= rows - 4; r++) {
+        let color = board[r][c];
+        if (color !== ' ' &&
+            board[r+1][c] === color &&
+            board[r+2][c] === color &&
+            board[r+3][c] === color) {
+          for (let i = 0; i < 4; i++) {
+            board[r+i][c] = ' ';
+          }
+          if (color === 'red') redScore++;
+          else if (color === 'yellow') yellowScore++;
+          comboFound = true;
+        }
+      }
+    }
+    
+    // check diagonal (\) combos
+    for (let r = 0; r <= rows - 4; r++) {
+      for (let c = 0; c <= cols - 4; c++) {
+        let color = board[r][c];
+        if (color !== ' ' &&
+            board[r+1][c+1] === color &&
+            board[r+2][c+2] === color &&
+            board[r+3][c+3] === color) {
+          for (let i = 0; i < 4; i++) {
+            board[r+i][c+i] = ' ';
+          }
+          if (color === 'red') redScore++;
+          else if (color === 'yellow') yellowScore++;
+          comboFound = true;
+        }
+      }
+    }
+    
+    // check diagonal (/) combos
+    for (let r = 0; r <= rows - 4; r++) {
+      for (let c = 3; c < cols; c++) {
+        let color = board[r][c];
+        if (color !== ' ' &&
+            board[r+1][c-1] === color &&
+            board[r+2][c-2] === color &&
+            board[r+3][c-3] === color) {
+          for (let i = 0; i < 4; i++) {
+            board[r+i][c-i] = ' ';
+          }
+          if (color === 'red') redScore++;
+          else if (color === 'yellow') yellowScore++;
+          comboFound = true;
+        }
+      }
+    }
+    
+    // if any combo was found, drop the pieces again
+    if (comboFound) {
+      pieceDrop();
+    }
+    
+  } while (comboFound);
+}
+
+// check if the board is completely filled
+function isBoardFull() {
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      if (board[r][c] === ' ') {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+// End the game 
+function endGame() {
+  noLoop(); 
+  console.log("Game over! The board is full!");
+  console.log("Red score: " + redScore);
+  console.log("Yellow score: " + yellowScore);
+}
+
+
