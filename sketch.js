@@ -13,7 +13,10 @@ let curRedImg, curYellowImg;
 let popSound;
 let sickBeat;
 
-
+// Timer variables
+let timerDiv;     // DOM element to display the timer
+let timerStart;   // time when current turn started (in milliseconds)
+const timeLimit = 5000;  // 5,000 millaseconds
 
 function preload() { 
   cellSize = boardSize / cols; // keep board cells at board size
@@ -45,11 +48,45 @@ function setup() {
   // initialize the board
   board = Array.from({ length: rows }, () => Array(cols).fill(' '));
 
+  // Create a timer div and style it so it's centered at the top of the page (outside the canvas)
+  timerDiv = createDiv('');
+  timerDiv.style('position', 'fixed');
+  timerDiv.style('top', '10px');
+  timerDiv.style('left', '50%');
+  timerDiv.style('transform', 'translateX(-50%)');
+  timerDiv.style('font-size', '28px');
+  timerDiv.style('font-family', 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif');
+  timerDiv.style('color', '#ff0000');
+  timerDiv.style('width', '200px'); // Set the width of the timerDiv
+  timerDiv.style('text-align', 'center'); // Center the text inside the div
+  timerDiv.style('text-shadow', '0 0 9px rgba(255, 72, 0, 0.5)'); // Add drop shadow
+  
+  // Start the turn timer
+  timerStart = millis();
 }
 
+function updateTimer() {
+  let elapsed = millis() - timerStart;
+  
+  // If the time limit is reached without a move, switch turn automatically.
+  if (elapsed >= timeLimit) {
+    currentPlayer = (currentPlayer === 'red') ? 'yellow' : 'red';
+    timerStart = millis(); // reset the timer
+  }
+  
+  // Calculate remaining time (in seconds)
+  let timeLeft = Math.ceil((timeLimit - (millis() - timerStart)) / 1000);
+  if (timeLeft < 0) timeLeft = 0;
+  
+  timerDiv.html("Current turn: " + currentPlayer + " - Time left: " + timeLeft + " seconds");
+}
 
 function draw() {
   background(255);
+
+  // Update timer and switch turn if time is up
+  updateTimer();
+
   drawBoard();
 }
 
