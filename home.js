@@ -5,8 +5,8 @@ let redChip;
 let yellowChip;
 let sickBeat;
 let chipImages = {};
-let selectedRedChip = 'NONE';
-let selectedYellowChip = 'NONE';
+let selectedRedChip;
+let selectedYellowChip;
 
 function preload () {
 sickBeat = loadSound('assets/connect.mp3');
@@ -20,8 +20,6 @@ chipImages['SLEEPER'] = loadImage('assets/nappin_skin.png');
 chipImages['PIRATE'] = loadImage('assets/piratecap_skin.png');
 chipImages['FRESHMAN'] = loadImage('assets/wave_skin.png');
 chipImages['PETER'] = loadImage('assets/petergriffin_skin.png');
-chipImages['NONE'] = loadImage('assets/default_chip.png');
-
 
 }
 
@@ -92,11 +90,19 @@ function draw () {
     background(255, 204, 0);
 
     let redChipX = ((windowWidth - 600) / 7.5);
-    image(redChip, redChipX,((windowHeight - 30) / 4), 600, 600); //helps create x position for red chip so yellow chip can reflect of its position
-    image(yellowChip, (windowWidth - redChipX - 500) , (windowHeight - 30) / 4, 600, 600);
+    let redChipY = ((windowHeight - 30) / 4);
+    let yellowChipX = ((windowWidth - redChipX -500));
+    let yellowChipY = ((windowHeight - 30) / 4);
 
-    image(chipImages[selectedRedChip], redChipX, ((windowHeight - 30) / 4), 600, 600);
-    image(chipImages[selectedYellowChip], (windowWidth - redChipX - 500),  (windowHeight - 30) / 4, 600, 600);
+    image(redChip, redChipX,redChipY, 600, 600); //helps create x position for red chip so yellow chip can reflect of its position
+    image(yellowChip,yellowChipX , (windowHeight - 30) / 4, 600, 600);
+
+    if (chipImages[selectedRedChip]) {
+        image(chipImages[selectedRedChip], redChipX, redChipY, 600, 600);
+    }
+    if (chipImages[selectedYellowChip]) {
+        image(chipImages[selectedYellowChip], yellowChipX, yellowChipY, 600, 600);
+    }
    
 }
 
